@@ -1,0 +1,17 @@
+cmake_minimum_required(VERSION 3.16)
+project(socket_p C)
+
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_BUILD_TYPE "Debug")
+set(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g -ggdb")
+set(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall")
+
+add_subdirectory(demo1)
+add_subdirectory(udp_s)
+add_subdirectory(local_s)
+add_subdirectory(iovec)
+add_subdirectory(select_s)
+add_subdirectory(poll_s)
+add_subdirectory(noblock_s)
+add_subdirectory(epoll_s)
+add_executable(socket_p main.c)

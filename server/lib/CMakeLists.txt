@@ -1,46 +1,15 @@
+set(lib
+		acceptor.c
+		buffer.c
+		channel.c
+		channel_map.c
+		event_loop.c
+        log.c
+		poll_dispatcher.c
+		sock.c
+        )
 if (EPOLL_EXISTS)
-    set(lib
-            log.c
-            # sock_ntop.c
-            # read.c
-            # tcp_server.c
-            # tcp_client.c
-            # event_loop.c
-            # channel.c
-            # acceptor.c
-            # channel_map.c
-            # poll_dispatcher.c
-            # thread_pool.c
-            # event_loop_thread.c
-            # utils.c
-            # epoll_dispatcher.c
-            # buffer.c
-            # tcp_connection.c
-            # http_server.c
-            # http_request.c
-            # http_response.c
-            )
 else ()
-    set(lib
-            log.c
-            # sock_ntop.c
-            # read.c
-            # tcp_server.c
-            # tcp_client.c
-            # event_loop.c
-            # channel.c
-            # acceptor.c
-            # channel_map.c
-            # poll_dispatcher.c
-            # thread_pool.c
-            # event_loop_thread.c
-            # utils.c
-            # buffer.c
-            # tcp_connection.c
-            # http_server.c
-            # http_request.c
-            # http_response.c
-            )
 endif ()
 
 

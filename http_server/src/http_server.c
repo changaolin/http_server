@@ -42,7 +42,7 @@ int main(int c, char **v) {
 
     //初始tcp_server，可以指定线程数目，如果线程是0，就是在这个线程里acceptor+i/o；如果是1，有一个I/O线程
     //tcp_server自己带一个event_loop
-    struct http_server *httpServer = http_server_new(eventLoop, SERV_PORT, onRequest, 2);
+    struct http_server *httpServer = http_server_new(eventLoop, SERV_PORT, onRequest, 1);
     http_server_start(httpServer);
 
     // main thread for acceptor

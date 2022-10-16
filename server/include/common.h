@@ -5,7 +5,8 @@
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
+
 #include "log.h"
 #include "sock.h"
-
+#define SERVER_PORT 43211 
 #endif // COMMON_H

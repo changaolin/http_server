@@ -26,19 +26,19 @@ struct event_loop {
 	char* thread_name;
 };
 
-int eve_loop_handle_pending_channel(struct event_loop* loop);
-void eve_loop_channel_buffer_nolock(struct event_loop* loop, int fd, struct channel* chan, int type); 
+int event_loop_handle_pending_channel(struct event_loop* loop);
+void event_loop_channel_buffer_nolock(struct event_loop* loop, int fd, struct channel* chan, int type); 
 
-struct event_loop* eve_loop_init();
-struct event_loop* eve_loop_init_with_name(char* thread_name);
-void eve_loop_wakeup(struct event_loop* loop);
-int eve_loop_run(struct event_loop* loop);
-int eve_loop_add_channel_event(struct event_loop* loop, int fd, struct channel* chan);
-int eve_loop_remove_channel_event(struct event_loop* loop, int fd, struct channel* chan);
-int eve_loop_update_channel_event(struct event_loop* loop, int fd, struct channel* chan);
-int eve_loop_handle_pending_add(struct event_loop* loop, int fd, struct channel* chan);
-int eve_loop_handle_pending_remove(struct event_loop* loop, int fd, struct channel* chan);
-int eve_loop_handle_pending_update(struct event_loop* loop, int fd, struct channel* chan);
+struct event_loop* event_loop_init();
+struct event_loop* event_loop_init_with_name(char* thread_name);
+void event_loop_wakeup(struct event_loop* loop);
+int event_loop_run(struct event_loop* loop);
+int event_loop_add_channel_event(struct event_loop* loop, int fd, struct channel* chan);
+int event_loop_remove_channel_event(struct event_loop* loop, int fd, struct channel* chan);
+int event_loop_update_channel_event(struct event_loop* loop, int fd, struct channel* chan);
+int event_loop_handle_pending_add(struct event_loop* loop, int fd, struct channel* chan);
+int event_loop_handle_pending_remove(struct event_loop* loop, int fd, struct channel* chan);
+int event_loop_handle_pending_update(struct event_loop* loop, int fd, struct channel* chan);
 int channel_event_activate(struct event_loop* loop, int fd, int revents);
 
 void assert_in_same_thread(struct event_loop* loop);

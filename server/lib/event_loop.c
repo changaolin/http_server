@@ -14,7 +14,7 @@ void assert_in_same_thread(struct event_loop* loop) {
 int is_in_same_thread(struct event_loop* loop) {
 	return loop->owner_thread_id == pthread_self();
 }
-int eve_loop_handle_pending_channel(struct event_loop* loop) {
+int event_loop_handle_pending_channel(struct event_loop* loop) {
 	pthread_mutex_lock(&loop->mutex);
 	loop->is_handle_pending = 1;
 	struct channel_element* element = loop->pending_head;
@@ -23,24 +23,25 @@ int eve_loop_handle_pending_channel(struct event_loop* loop) {
 		int fd = chan->fd;
 		switch (element->type) {
 			case 1:
-				eve_loop_handle_pending_add(loop, fd, chan);
+				event_loop_handle_pending_add(loop, fd, chan);
 				break;
 			case 2:
-				eve_loop_handle_pending_remove(loop, fd, chan);
+				event_loop_handle_pending_remove(loop, fd, chan);
 				break;
 			case 3:
-				eve_loop_handle_pending_update(loop, fd, chan);
+				event_loop_handle_pending_update(loop, fd, chan);
 				break;
 			default:
-				WARNING_LOG("eve_loop_handle_pending_channel error, type is [%d]", element->type);
+				WARNING_LOG("event_loop_handle_pending_channel error, type is [%d]", element->type);
 		}
 		element = element->next;
 	}
 	loop->pending_head = loop->pending_tail = NULL;
 	loop->is_handle_pending = 0;
 	pthread_mutex_unlock(&loop->mutex);
+	return 0;
 }
-void eveng_loop_channel_buffer_nolock(struct event_loop* loop, int fd, struct channel* chan, int type) {
+void event_loop_channel_buffer_nolock(struct event_loop* loop, int fd, struct channel* chan, int type) {
 	struct channel_element* element = malloc(sizeof(struct channel_element));
 	element->channel = chan;
 	element->type = type;
@@ -52,30 +53,30 @@ void eveng_loop_channel_buffer_nolock(struct event_loop* loop, int fd, struct ch
 		loop->pending_tail = element;
 	}
 }
-int eve_loop_do_channel_event(struct event_loop* loop, int fd, struct channel* chan, int type) {
+int event_loop_do_channel_event(struct event_loop* loop, int fd, struct channel* chan, int type) {
 	pthread_mutex_lock(&loop->mutex);
 	assert(loop->is_handle_pending == 0);
-	eve_loop_channel_buffer_nolock(loop, fd, chan, type);
+	event_loop_channel_buffer_nolock(loop, fd, chan, type);
 	pthread_mutex_unlock(&loop->mutex);
 	if (!is_in_same_thread(loop)) {
-		eve_loop_wakeup(loop);
+		event_loop_wakeup(loop);
 	} else {
-		eve_loop_handle_pending_channel(loop);
+		event_loop_handle_pending_channel(loop);
 	}
 	return 0;
 }
 
-int eve_loop_add_channel_event(struct event_loop* loop, int fd, struct channel* chan) {
-	return eve_loop_do_channel_event(loop, fd, chan, 1);
+int event_loop_add_channel_event(struct event_loop* loop, int fd, struct channel* chan) {
+	return event_loop_do_channel_event(loop, fd, chan, 1);
 }
-int eve_loop_remove_channel_event(struct event_loop* loop, int fd, struct channel* chan) {
-	return eve_loop_do_channel_event(loop, fd, chan, 2);
+int event_loop_remove_channel_event(struct event_loop* loop, int fd, struct channel* chan) {
+	return event_loop_do_channel_event(loop, fd, chan, 2);
 }
-int eve_loop_update_channel_event(struct event_loop* loop, int fd, struct channel* chan) {
-	return eve_loop_do_channel_event(loop, fd, chan, 3);
+int event_loop_update_channel_event(struct event_loop* loop, int fd, struct channel* chan) {
+	return event_loop_do_channel_event(loop, fd, chan, 3);
 }
 
-int eve_loop_handle_pending_add(struct event_loop* loop, int fd, struct channel* chan) {
+int event_loop_handle_pending_add(struct event_loop* loop, int fd, struct channel* chan) {
 	INFO_LOG("add channel fd = '%d, %s'", fd, loop->thread_name);
 	struct channel_map* map = loop->channel_map;
 	if (fd < 0) {
@@ -94,7 +95,7 @@ int eve_loop_handle_pending_add(struct event_loop* loop, int fd, struct channel*
 	return 0;
 }
 
-int eve_loop_handle_pending_remove(struct event_loop* loop, int fd, struct channel* chan) {
+int event_loop_handle_pending_remove(struct event_loop* loop, int fd, struct channel* chan) {
 	struct channel_map* map = loop->channel_map;
 	assert(fd == chan->fd);
 	if (fd < 0) {
@@ -112,7 +113,7 @@ int eve_loop_handle_pending_remove(struct event_loop* loop, int fd, struct chann
 	return retval;
 }
 
-int eve_loop_handle_pending_update(struct event_loop* loop, int fd, struct channel* chan) {
+int event_loop_handle_pending_update(struct event_loop* loop, int fd, struct channel* chan) {
 	INFO_LOG("update channel fd = '%d, %s'", fd, loop->thread_name);
 	struct channel_map* map = loop->channel_map;
 	if (fd < 0) {
@@ -151,7 +152,7 @@ int channel_event_activate(struct event_loop* loop, int fd, int revents) {
 	return 0;
 }
 
-void eve_loop_wakeup(struct event_loop* loop) {
+void event_loop_wakeup(struct event_loop* loop) {
 	char one = 'a';
 	ssize_t n = write(loop->sockt_pair[0], &one, sizeof(one));
 	if (n != sizeof(one)) {
@@ -170,10 +171,10 @@ int handle_wakeup(void* data) {
 	INFO_LOG("wakeup %s", loop->thread_name);
 }
 
-struct event_loop* eve_loop_init() {
-	return eve_loop_init_with_name(NULL);
+struct event_loop* event_loop_init() {
+	return event_loop_init_with_name(NULL);
 }
-struct event_loop* eve_loop_init_with_name(char* thread_name) {
+struct event_loop* event_loop_init_with_name(char* thread_name) {
 	struct event_loop* loop = malloc(sizeof(struct event_loop));
 	pthread_mutex_init(&loop->mutex, NULL);
 	pthread_cond_init(&loop->cond, NULL);
@@ -197,12 +198,12 @@ struct event_loop* eve_loop_init_with_name(char* thread_name) {
 	loop->is_handle_pending = 0;
 	loop->pending_head = loop->pending_tail = NULL;
 	struct channel* chan = channel_new(loop->sockt_pair[1], EVENT_READ, handle_wakeup, NULL, loop);
-	eve_loop_add_channel_event(loop, loop->sockt_pair[1], chan);
+	event_loop_add_channel_event(loop, loop->sockt_pair[1], chan);
 	return loop;
 }
 
-int eve_loop_run(struct event_loop* loop) {
-	assert(loop == NULL);
+int event_loop_run(struct event_loop* loop) {
+	assert(loop != NULL);
 	if (loop->owner_thread_id != pthread_self()) {
 		exit(1);
 	}
@@ -211,7 +212,7 @@ int eve_loop_run(struct event_loop* loop) {
 	tmval.tv_sec = 1;
 	while (!loop->quit) {
 		loop->dspt->dispatch(loop, &tmval);
-		eve_loop_handle_pending_channel(loop);
+		event_loop_handle_pending_channel(loop);
 	}
 	INFO_LOG("event loop end, %s", loop->thread_name);
 	return 0;

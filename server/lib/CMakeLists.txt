@@ -4,9 +4,16 @@ set(lib
 		channel.c
 		channel_map.c
 		event_loop.c
+		event_loop_thread.c
+		http_request.c
+		http_response.c
+		http_server.c
         log.c
 		poll_dispatcher.c
 		sock.c
+		tcp_connection.c
+		tcp_server.c
+		thread_pool.c
         )
 if (EPOLL_EXISTS)
 else ()

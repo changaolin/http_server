@@ -79,6 +79,10 @@ int http_on_msg(struct buffer* input, struct tcp_connection* conn) {
 	INFO_LOG("get msg from tcp conn %s", conn->name);
 	struct http_request* req = (struct http_request*) conn->request;
 	struct http_server* server = (struct http_server*) conn->data;
+	if (server == NULL) {
+		abort();
+		return -1;
+	}
 	if (parse_http_request(input, req) == 0) {
 		char* err_rsp = "HTTP/1.1 400 Bad Request\r\n\r\n";
 		tcp_connection_send_data(conn, err_rsp, sizeof(err_rsp));

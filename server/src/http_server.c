@@ -36,6 +36,7 @@ int on_req(struct http_request* req, struct http_response* rsp) {
 	}
 	return 0;
 }
+
 int main(int argc, char* argv[]) {
 	struct event_loop* loop = event_loop_init();
 	struct http_server* server = http_server_new(loop, SERVER_PORT, on_req, 2);

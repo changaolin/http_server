@@ -1,1 +1,0 @@
-/usr/bin/cc   -rdynamic CMakeFiles/http_server_test.dir/http_server_test.c.o  -o ../bin/http_server_test  ../lib/libserverlib.a -lpthread 

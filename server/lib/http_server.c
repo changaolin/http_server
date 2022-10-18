@@ -115,7 +115,7 @@ int http_on_conn_closed(struct tcp_connection* conn) {
 struct http_server* http_server_new(struct event_loop* loop, int port, req_callback req_cb, int thread_num) {
 	struct http_server* server = malloc(sizeof(struct http_server));
 	server->req_cb = req_cb;
-	struct acceptor* acpt = acceptor_init(SERVER_PORT);
+	struct acceptor* acpt = acceptor_init(port);
 	server->tcp_server = tcp_server_init(loop, acpt, http_on_conn_cmlt, http_on_msg, http_on_write_cmpl, http_on_conn_closed, thread_num);
 	server->tcp_server->data = server;
 	return server;

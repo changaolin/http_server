@@ -126,7 +126,8 @@ void tcp_server_start(struct TCPServer* tcp_server) {
 	struct event_loop* loop = tcp_server->loop;
 
 	thread_pool_start(tcp_server->pool);
-	struct channel* chan = channel_new(acpt->listen_fd, EVENT_READ, handle_conn_established, NULL, chan);
+	struct channel* chan = channel_new(acpt->listen_fd, EVENT_READ, handle_conn_established, NULL, tcp_server);
+	event_loop_add_channel_event(loop, chan->fd, chan);
 	return;
 }
 

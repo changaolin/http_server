@@ -22,7 +22,7 @@ int on_req(struct http_request* req, struct http_response* rsp) {
 		rsp->stats_msg = "OK";
 		rsp->content_type = "text/html";
 		rsp->body = "<html><head><title>This is a Test</title></head><body><h1>Hello</h1></body></html>";
-	} else if (strcmp(path, "/network")) {
+	} else if (strcmp(path, "/network") == 0) {
 		rsp->code = OK;
 		rsp->stats_msg = "OK";
 		rsp->content_type = "text/html";
@@ -30,6 +30,8 @@ int on_req(struct http_request* req, struct http_response* rsp) {
 	} else {
 		rsp->code = NOT_FOUND;
 		rsp->stats_msg = "Not Found";
+		rsp->content_type = "text/html";
+		rsp->body = "NOT_FOUND";
 		rsp->keep_connected = 1;
 	}
 	return 0;
